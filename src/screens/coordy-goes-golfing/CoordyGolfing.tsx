@@ -35,13 +35,14 @@ const CoordyGolfing = () => {
   });
 
   return (
-    <div className="map__container">
+    <div>
       <ReactMapGL
         mapboxApiAccessToken={token}
         {...viewport}
         onViewportChange={(newViewport: Viewport) => setViewport(newViewport)}
       >
         <button
+          className="coordy-control__button"
           onClick={() => {
             walkingPath
               ? setWalkingPath(null)
@@ -51,11 +52,15 @@ const CoordyGolfing = () => {
           Show Walking Path
         </button>
         {walkingPath && (
-          <button onClick={() => goGolfing(walkingPath, setCoordy)}>
+          <button
+            className="coordy-control__button"
+            onClick={() => goGolfing(walkingPath, setCoordy)}
+          >
             Go Golfing!
           </button>
         )}
         <button
+          className="coordy-control__button"
           onClick={() =>
             contours
               ? setContours(null)
@@ -65,6 +70,7 @@ const CoordyGolfing = () => {
           Toggle Contours!
         </button>
         <button
+          className="coordy-control__button"
           onClick={() =>
             newHoles
               ? setNewHoles(null)
@@ -97,6 +103,7 @@ const CoordyGolfing = () => {
           offsetTop={-20}
         >
           <img
+            className="coordy"
             alt="Coordy wearing an overly-real-looking golf hat"
             src={coordyWithHat}
           />

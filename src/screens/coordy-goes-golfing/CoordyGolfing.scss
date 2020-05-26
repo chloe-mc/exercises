@@ -1,16 +1,11 @@
-body {
-  margin: 0;
+@import "../../styles/mixins.scss";
+
+.coordy-control__button {
+  @include button;
+  margin: 5px;
 }
 
-.map__container {
-  font-family: sans-serif;
-}
-
-button {
-  margin-right: 5px;
-}
-
-img {
+.coordy {
   height: 40px;
   width: 34px;
 }
