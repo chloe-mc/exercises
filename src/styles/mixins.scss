@@ -1,0 +1,27 @@
+@import "./colors.scss";
+
+@mixin box-shadow {
+  box-shadow: 1px 1px 2px $shadow;
+}
+
+@mixin box-shadow-hover {
+  box-shadow: 1px 1px 6px $shadow;
+}
+
+@mixin header-banner {
+  background-color: $dark-background;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: $light-text;
+}
+
+@mixin button {
+  background-color: $dark-background;
+  border: $dark-background;
+  color: $light-text;
+  padding: 1em 1.5em;
+}

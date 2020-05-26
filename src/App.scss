@@ -1,0 +1,23 @@
+@import "./styles/mixins.scss";
+.app {
+  text-align: center;
+}
+.app__header {
+  @include header-banner;
+}
+.list__container {
+  padding: 2em;
+}
+.list__item__container {
+  text-decoration: none;
+  color: black;
+}
+.list__item {
+  padding: 1em;
+  border: 0.002em solid rgba(0, 0, 0, 0.5);
+  margin-top: 1em;
+  @include box-shadow;
+}
+.list__item:hover {
+  @include box-shadow-hover;
+}
