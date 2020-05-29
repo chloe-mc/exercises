@@ -1,6 +1,7 @@
 import { TextEditor } from "./text-editor/TextEditor";
 import { TicTacToe } from "./tic-tac-toe/TicTacToe";
 import { CoordyGolfing } from "./coordy-goes-golfing/CoordyGolfing";
+import { Snake } from "./snake/Snake";
 import { Exercise } from "../global";
 
 const exercises: Exercise[] = [
@@ -24,6 +25,13 @@ const exercises: Exercise[] = [
     emojiAriaLabel: "Golf hole with flag and ball",
     component: CoordyGolfing,
     link: "coordy-goes-golfing",
+  },
+  {
+    title: "Snake",
+    emoji: "🐍",
+    emojiAriaLabel: "Snake curled up",
+    component: Snake,
+    link: "snake",
   },
 ];
 

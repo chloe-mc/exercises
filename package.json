@@ -6,14 +6,15 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@turf/turf": "5.1.6",
     "@types/jest": "^24.0.0",
+    "@types/mapbox-gl": "1.10.1",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-map-gl": "^5.2.2",
     "@types/react-router-dom": "^5.1.5",
-    "@turf/turf": "5.1.6",
-    "@types/mapbox-gl": "1.10.1",
+    "@xstate/react": "^0.8.1",
     "dotenv": "^8.2.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
@@ -21,7 +22,8 @@
     "react-map-gl": "^5.2.5",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "xstate": "^4.10.0"
   },
   "scripts": {
     "start": "react-scripts start",

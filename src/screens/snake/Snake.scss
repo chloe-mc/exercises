@@ -1,0 +1,19 @@
+@import "../../styles//mixins.scss";
+
+.snake__header {
+  display: flex;
+  justify-content: space-between;
+  background-color: darkgreen;
+  color: white;
+  padding-left: 1em;
+}
+.disabled {
+  pointer-events: none;
+}
+.snake__start-game {
+  @include button;
+}
+.snake__grid {
+  margin: 20px auto;
+  width: 400px;
+}
