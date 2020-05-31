@@ -26,18 +26,17 @@ interface SnakeStateSchema {
   };
 }
 interface SnakeContext {
-  boardEdgeLength: number;
-  direction: SnakeSegment;
+  boardDimension: number;
+  direction: Direction;
+  directions: { [key in Direction]: SnakeSegment };
+  food?: SnakeSegment;
+  gameOver: boolean;
+  initialSnake: SnakeSegment[];
   snake: SnakeSegment[];
-  wonLastRound?: boolean;
 }
 
-const directions = {
-  [Direction.Up]: { x: 0, y: -1 },
-  [Direction.Down]: { x: 0, y: 1 },
-  [Direction.Left]: { x: -1, y: 0 },
-  [Direction.Right]: { x: 1, y: 0 },
-};
+const getRandomInt = (dimension: number) =>
+  Math.floor(Math.random() * dimension);
 
 const initialSnake = [
   { x: 7, y: 9 },
@@ -50,20 +49,34 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
     id: "snake",
     initial: "idle",
     context: {
-      boardEdgeLength: 20,
-      direction: directions[Direction.Right],
+      boardDimension: 20,
+      direction: Direction.Right,
+      directions: {
+        [Direction.Up]: { x: 0, y: -1 },
+        [Direction.Down]: { x: 0, y: 1 },
+        [Direction.Left]: { x: -1, y: 0 },
+        [Direction.Right]: { x: 1, y: 0 },
+      },
+      gameOver: false,
+      initialSnake: initialSnake,
       snake: initialSnake,
-      wonLastRound: undefined,
+      food: undefined,
     },
     states: {
       idle: {
         on: {
-          START_GAME: "playing",
+          START_GAME: {
+            target: "playing",
+          },
         },
+        exit: assign<SnakeContext, SnakeEvent>({
+          gameOver: false,
+          direction: Direction.Right,
+        }),
       },
       playing: {
         invoke: {
-          src: (context) => (callback) => {
+          src: () => (callback) => {
             const interval = setInterval(() => {
               callback("MOVE_SNAKE");
             }, 100);
@@ -71,10 +84,41 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
           },
         },
         on: {
+          "": [
+            {
+              target: "idle",
+              actions: assign<SnakeContext, SnakeEvent>({
+                snake: (context) => context.initialSnake,
+                food: undefined,
+              }),
+              cond: (context) => context.gameOver,
+            },
+            {
+              actions: assign({
+                food: (context) => ({
+                  x: getRandomInt(context.boardDimension),
+                  y: getRandomInt(context.boardDimension),
+                }),
+              }),
+              cond: (context) => !context.food,
+            },
+          ],
           CHANGE_DIRECTION: {
             actions: [
               assign({
-                direction: (_, event) => directions[event.direction],
+                direction: (context, event) => {
+                  const horizontal = [Direction.Left, Direction.Right];
+                  const vertical = [Direction.Up, Direction.Down];
+                  const isOppositeDirection =
+                    (horizontal.includes(event.direction) &&
+                      horizontal.includes(context.direction)) ||
+                    (vertical.includes(event.direction) &&
+                      vertical.includes(context.direction));
+
+                  if (isOppositeDirection) return context.direction;
+
+                  return event.direction;
+                },
               }),
             ],
           },
@@ -82,8 +126,9 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
             actions: "validateAndMoveSnake",
           },
           END_GAME: {
-            target: "idle",
-            actions: assign({ snake: (_) => initialSnake }),
+            actions: assign<SnakeContext, SnakeEvent>({
+              gameOver: true,
+            }),
           },
         },
       },
@@ -91,26 +136,38 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
   },
   {
     actions: {
-      validateAndMoveSnake: assign({
-        snake: (context) => {
-          const nuSnake = [...context.snake];
-          const lastPosition = nuSnake[nuSnake.length - 1];
+      validateAndMoveSnake: assign((context) => {
+        const snake = [...context.snake];
+        const snakeHead = snake[snake.length - 1];
+        const maxBoardEdge = context.boardDimension - 1;
 
-          let nextX = lastPosition.x + context.direction.x;
-          if (nextX > context.boardEdgeLength - 1) nextX = 0;
-          if (nextX < 0) nextX = context.boardEdgeLength - 1;
+        let nextX = snakeHead.x + context.directions[context.direction].x;
+        if (nextX > maxBoardEdge) nextX = 0;
+        if (nextX < 0) nextX = maxBoardEdge;
 
-          let nextY = lastPosition.y + context.direction.y;
-          if (nextY > context.boardEdgeLength - 1) nextY = 0;
-          if (nextY < 0) nextY = context.boardEdgeLength - 1;
+        let nextY = snakeHead.y + context.directions[context.direction].y;
+        if (nextY > maxBoardEdge) nextY = 0;
+        if (nextY < 0) nextY = maxBoardEdge;
 
-          nuSnake.shift();
-          nuSnake.push({
-            x: nextX,
-            y: nextY,
-          });
-          return nuSnake;
-        },
+        const gameOver = snake.some(
+          (segment) => segment.x === nextX && segment.y === nextY
+        );
+        if (gameOver) return { gameOver: gameOver };
+
+        const hasEaten = snake.some(
+          (segment) =>
+            segment.x === context.food?.x && segment.y === context.food?.y
+        );
+
+        let food = undefined;
+        if (!hasEaten) {
+          snake.shift();
+          food = context.food;
+        }
+
+        snake.push({ x: nextX, y: nextY });
+
+        return { snake, gameOver, food };
       }),
     },
   }

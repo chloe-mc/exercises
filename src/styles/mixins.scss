@@ -10,7 +10,7 @@
 
 @mixin header-banner {
   background-color: $dark-background;
-  min-height: 20vh;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,4 +24,9 @@
   border: $dark-background;
   color: $light-text;
   padding: 1em 1.5em;
+
+  &:focus {
+    border-radius: none;
+    outline: solid 1px $dark-background;
+  }
 }

@@ -1,19 +1,21 @@
 @import "../../styles//mixins.scss";
+@import "../../styles//colors.scss";
 
-.snake__header {
+.header {
+  @include header-banner;
+}
+.content {
   display: flex;
-  justify-content: space-between;
-  background-color: darkgreen;
-  color: white;
-  padding-left: 1em;
+  align-items: center;
+  flex-direction: column;
+  color: $dark-text;
+  font-weight: bold;
 }
-.disabled {
-  pointer-events: none;
-}
-.snake__start-game {
+.button {
   @include button;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
-.snake__grid {
-  margin: 20px auto;
-  width: 400px;
+.grid {
+  margin: 40px;
 }
