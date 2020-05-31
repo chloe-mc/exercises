@@ -1,3 +1,3 @@
 ## 💪🏼 Exercises 💪🏼
 
-Small exercise projects for POC/practice.
+POC/practice
