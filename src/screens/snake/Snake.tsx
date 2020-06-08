@@ -100,6 +100,18 @@ const Snake = () => {
         </button>
 
         <div>(Or Press Spacebar)</div>
+        <div>{`Score: ${state.context.score}`}</div>
+        {state.context.highScore && (
+          <div>
+            <span role="img" aria-label="high five">
+              🙌🏼
+            </span>{" "}
+            New High Score{" "}
+            <span role="img" aria-label="high five">
+              🙌🏼
+            </span>
+          </div>
+        )}
         <div className="grid">
           <canvas
             height={boardDimension}

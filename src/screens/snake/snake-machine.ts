@@ -31,7 +31,9 @@ interface SnakeContext {
   directions: { [key in Direction]: SnakeSegment };
   food?: SnakeSegment;
   gameOver: boolean;
+  highScore: boolean;
   initialSnake: SnakeSegment[];
+  score: number;
   snake: SnakeSegment[];
 }
 
@@ -57,21 +59,25 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
         [Direction.Left]: { x: -1, y: 0 },
         [Direction.Right]: { x: 1, y: 0 },
       },
-      gameOver: false,
-      initialSnake: initialSnake,
-      snake: initialSnake,
       food: undefined,
+      gameOver: false,
+      highScore: false,
+      initialSnake: initialSnake,
+      score: 0,
+      snake: initialSnake,
     },
     states: {
       idle: {
         on: {
           START_GAME: {
             target: "playing",
+            actions: assign<SnakeContext, SnakeEvent>({ highScore: false }),
           },
         },
         exit: assign<SnakeContext, SnakeEvent>({
           gameOver: false,
           direction: Direction.Right,
+          score: 0,
         }),
       },
       playing: {
@@ -87,10 +93,13 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
           "": [
             {
               target: "idle",
-              actions: assign<SnakeContext, SnakeEvent>({
-                snake: (context) => context.initialSnake,
-                food: undefined,
-              }),
+              actions: [
+                "checkHighScore",
+                assign<SnakeContext, SnakeEvent>({
+                  snake: (context) => context.initialSnake,
+                  food: undefined,
+                }),
+              ],
               cond: (context) => context.gameOver,
             },
             {
@@ -136,6 +145,20 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
   },
   {
     actions: {
+      checkHighScore: assign({
+        highScore: (context) => {
+          const currentHighScore =
+            parseInt(localStorage.getItem("snakeHighScore") ?? "") || 0;
+
+          let highScore = false;
+          if (context.score > currentHighScore) {
+            localStorage.setItem("snakeHighScore", context.score.toString());
+            highScore = true;
+          }
+
+          return highScore;
+        },
+      }),
       validateAndMoveSnake: assign((context) => {
         const snake = [...context.snake];
         const snakeHead = snake[snake.length - 1];
@@ -165,9 +188,11 @@ const snakeMachine = Machine<SnakeContext, SnakeStateSchema, SnakeEvent>(
           food = context.food;
         }
 
+        let score = hasEaten ? context.score + 10 : context.score;
+
         snake.push({ x: nextX, y: nextY });
 
-        return { snake, gameOver, food };
+        return { snake, gameOver, food, score };
       }),
     },
   }
